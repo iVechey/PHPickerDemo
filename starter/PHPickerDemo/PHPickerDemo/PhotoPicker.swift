@@ -10,6 +10,7 @@ import PhotosUI
 
 
 struct PhotoPicker: UIViewControllerRepresentable {
+    @ObservedObject var mediaItems: PickedMediaItems
     var didFinishPicking(_ didSelectItems: Bool) -> Void
     typealias UIViewControllerType = PHPickerViewController
   
