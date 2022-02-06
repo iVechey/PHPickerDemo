@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ItemsView: View {
     @State private var showSheet = false
+    @ObservedObject var mediaItems = PickedMediaItems()
     
     var body: some View {
         NavigationView {
