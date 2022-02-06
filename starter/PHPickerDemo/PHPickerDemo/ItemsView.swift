@@ -25,7 +25,10 @@ struct ItemsView: View {
                 }))
         }
         .sheet(isPresented: $showSheet, content: {
-            
+            PhotoPicker() { didSelectItems in
+                           
+                showSheet = false
+            }         
         })
     }
 }
