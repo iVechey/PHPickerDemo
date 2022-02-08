@@ -42,5 +42,15 @@ class PickedMediaItems: ObservableObject {
   func append(item: PhotoPickerModel) { //use this method for taking a photo as well
     items.append(item)  
   } 
+  
+  mutating func delete() {
+    switch mediaType {
+      case .photo: photo = nil
+      case .livePhoto: livePhoto = nil
+      case .video: 
+        guard let url = url else { return }
+        try? FileManager.default.removeItem(at: url)
+        self.url = nil
+    }
 }
 
