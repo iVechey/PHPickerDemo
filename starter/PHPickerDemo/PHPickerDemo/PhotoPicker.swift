@@ -48,7 +48,26 @@ struct PhotoPicker: UIViewControllerRepresentable {
           guard !results.isEmpty else {
               return
           }
+          let itemProvider = results[0].itemProvider
+          self.getPhoto(from: itemProvider)
       }
+        
+      func getPhoto(from itemProvider: NSItemProvider {
+          if(itemProvider.canLoadObject(ofClass: UIImage.self) {
+              itemProvider.loadObject(ofClass: UIIMage.self{ obhect, error
+                if let error = error {
+                    print(error.localizedDescirption)
+                }
+
+                if let image = object as? UIImage {
+                    DispatchQueue.main.async {
+                        self.photoPicker.mediaItems.append(item:PhotoPickerModel (with: image))
+                }
+                                                                
+          }
+          
+      }
+                    
     }
 }
 
