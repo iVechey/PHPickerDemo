@@ -36,6 +36,11 @@ struct ItemsView: View {
 
 struct ItemsView_Previews: PreviewProvider {
     static var previews: some View {
-        ItemsView()
+        List(mediaItems.items, id: \.id) {item in 
+            Image(uiImage: item.photo ?? UIImage()) //if a photo, show it, if not show an empty UIImage
+                .resizable()
+                .aspectRatio(contentMode: .fit)                          
+        }
+        
     }
 }
