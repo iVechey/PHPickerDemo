@@ -48,7 +48,14 @@ struct ItemsView_Previews: PreviewProvider {
                     VideoPlayer(player: AVPlayer(url: url))
                     .frame(minHeight: 200)
                 } else { EmptyView() }
-            }     
+            } else {
+                if let livePhoto = item.livePhoto {
+                    LivePhotoView(livePhoto: livePhoto)
+                        .fram(meinHeight: 200)
+                } else { EmptyView() }
+                
+            }
+                
         }
     }
 }
