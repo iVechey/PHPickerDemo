@@ -19,7 +19,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> PHPickerViewController {
       var config = PHPickerConfiguration()
       config.filter = .images
-      config.selectionLimit = 20 //selection limit: may not need
+      config.selectionLimit = 0 //selection limit: may not need 0 means unlimited
       config.preferredAssetRepresentationMode = .current
       
       let controller = PHPickerViewController(configuration: config)
@@ -48,13 +48,15 @@ struct PhotoPicker: UIViewControllerRepresentable {
           guard !results.isEmpty else {
               return
           }
-          let itemProvider = results[0].itemProvider
-          self.getPhoto(from: itemProvider)
+          for result in results {
+            let itemProvider = result.itemProvider
+            self.getPhoto(from: itemProvider)
+          }
       }
         
       func getPhoto(from itemProvider: NSItemProvider {
           if(itemProvider.canLoadObject(ofClass: UIImage.self) {
-              itemProvider.loadObject(ofClass: UIIMage.self{ obhect, error
+              itemProvider.loadObject(ofClass: UIIMage.self{ object, error in
                 if let error = error {
                     print(error.localizedDescirption)
                 }
@@ -67,8 +69,32 @@ struct PhotoPicker: UIViewControllerRepresentable {
           }
           
       }
-                    
-    }
+                                      
+      private func getVideo(from itemProvider: NSItemProvider, typeIdentifier
+            itemProvider.loadFileRepresentation(forTypeIdentifier: typeIdentifier) { url, error in
+            if let error = error {                                                                        
+               print(error.localizedDescription)
+            }
+                                                                                    
+            guard let url = url else {return}
+                                                                                    
+            let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first                                                                       
+            guard let targetURL = documentsDirectory?.appendingPathComponent(url.lastPathComponent) else { return }
+            
+            do {
+                if FileManager.default.fileExists(atPath: targetURL.path) {
+                    try FileManager.default.removeItem(at: targetURL)
+                }
+
+                try FileManager.default.copyItem(at: url, to: targetURL)
+
+                DispatchQueue.main.async {
+                    self.photoPicker.mediaItems.append(item: PhotoPickerModel(with: targetURL))
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+      }
 }
 
 
