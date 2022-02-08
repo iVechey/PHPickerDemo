@@ -18,7 +18,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
  
     func makeUIViewController(context: Context) -> PHPickerViewController {
       var config = PHPickerConfiguration()
-      config.filter = .any(of: [.images, .videos])
+      config.filter = .any(of: [.images, .videos, .livePhotos])
       config.selectionLimit = 0 //selection limit: may not need 0 means unlimited
       config.preferredAssetRepresentationMode = .current
       
@@ -61,25 +61,40 @@ struct PhotoPicker: UIViewControllerRepresentable {
                 self.getPhoto(from: itemProvider)
             } else if utType.conforms(to: .movie) {
                 self.getVideo(from: itemProvider, typeIdentifier: typeIdentifier)   
+            } else {
+                self.getPhoto(from: itemProvider, isLivePhoto: true)
             }    
           }
       }
         
-      func getPhoto(from itemProvider: NSItemProvider {
-          if(itemProvider.canLoadObject(ofClass: UIImage.self) {
-              itemProvider.loadObject(ofClass: UIIMage.self{ object, error in
+      private func getPhoto(from itemProvider: NSItemProvider, isLivePhoto: Bool) {
+          let objectType: NSItemProviderReading.Type = !isLivePhoto ? UIImage.self : PHLivePhoto.self
+          
+          if(itemProvider.canLoadObject(ofClass: objectType) {
+              itemProvider.loadObject(ofClass: objectType) { object, error in
                 if let error = error {
                     print(error.localizedDescirption)
                 }
-
-                if let image = object as? UIImage {
-                    DispatchQueue.main.async {
-                        self.photoPicker.mediaItems.append(item:PhotoPickerModel (with: image))
+                if !isLivePhoto { //normal photo
+                    if let image = object as? UIImage {
+                        DispatchQueue.main.async {
+                            self.photoPicker.mediaItems.append(item:PhotoPickerModel (with: image))
+                        }
+                    }
+                } else { //live photo
+                    if let livePhoto = object as? PHLivePhoto {
+                        DispatchQueue.main.async {
+                            self.photoPicker.mediaItems.append(item: PhotoPickerModel(with: livePhoto))
+                        }
+                    }
                 }
+              
+              }//end of itemProvider                                              
+                                                            
                                                                 
           }
           
-      }
+      } //end function
                                       
       private func getVideo(from itemProvider: NSItemProvider, typeIdentifier
             itemProvider.loadFileRepresentation(forTypeIdentifier: typeIdentifier) { url, error in
