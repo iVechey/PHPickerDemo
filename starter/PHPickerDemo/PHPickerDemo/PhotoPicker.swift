@@ -18,7 +18,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
  
     func makeUIViewController(context: Context) -> PHPickerViewController {
       var config = PHPickerConfiguration()
-      config.filter = .images
+      config.filter = .any(of: [.images, .videos])
       config.selectionLimit = 0 //selection limit: may not need 0 means unlimited
       config.preferredAssetRepresentationMode = .current
       
@@ -44,13 +44,24 @@ struct PhotoPicker: UIViewControllerRepresentable {
       
       func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) { //results are the photos selected
           photoPicker.didFinishPicking(!results.isEmpty)
+          let typeIdentifier = itemProvider.registeredTypeIdentifiers.first
+          let utType = UTType(typeIdentifier)
           
           guard !results.isEmpty else {
               return
           }
           for result in results {
             let itemProvider = result.itemProvider
-            self.getPhoto(from: itemProvider)
+              
+            guard let typeIdentifier = itemProvider.registeredTypeIdentifiers.first
+                  let utType = UTType(typeIdentifier)
+            else {continue}
+            
+            if utType.conforms(to: .image) {  
+                self.getPhoto(from: itemProvider)
+            } else if utType.conforms(to: .movie) {
+                self.getVideo(from: itemProvider, typeIdentifier: typeIdentifier)   
+            }    
           }
       }
         
